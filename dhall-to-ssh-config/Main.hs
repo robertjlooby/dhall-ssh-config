@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Dhall.SSHConfig
 
 main :: IO ()
 main = someFunc

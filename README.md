@@ -1,1 +1,1 @@
-# dhall-to-ssh-config
+# dhall-ssh-config

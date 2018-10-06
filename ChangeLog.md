@@ -1,3 +1,3 @@
-# Changelog for dhall-to-ssh-config
+# Changelog for dhall-ssh-config
 
 ## Unreleased changes

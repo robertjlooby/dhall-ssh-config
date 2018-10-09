@@ -1,0 +1,39 @@
+defaults: &defaults
+  working_directory: ~/dhall-ssh-config
+  docker:
+    - image: fpco/stack-build:lts-12.11
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+            - v1-stack-cache-
+      - run: stack setup
+      - run: stack build --only-dependencies
+      - run: stack build --test --no-run-tests
+      - save_cache:
+          key: v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+          paths:
+            - ~/.stack
+            - .stack-work
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+      - run: stack test
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build

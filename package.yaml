@@ -1,0 +1,49 @@
+name:                dhall-ssh-config
+version:             0.1.0.0
+github:              "robertjlooby/dhall-ssh-config"
+license:             GPL-3.0-only
+author:              "Robert Looby"
+maintainer:          "robertjlooby@gmail.com"
+copyright:           "2018 Robert Looby"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/robertjlooby/dhall-ssh-config#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  dhall-to-ssh-config:
+    main:                Main.hs
+    source-dirs:         dhall-to-ssh-config
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - dhall-ssh-config
+
+tests:
+  dhall-ssh-config-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - dhall-ssh-config
+    - hspec

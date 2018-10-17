@@ -1,1 +1,1 @@
-{ hostName = [] : Optional Text }
+{ hostName = [] : Optional Text, user = [] : Optional Text }

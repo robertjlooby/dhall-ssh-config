@@ -49,6 +49,12 @@ spec = do
       it "for a single hostName config" $
         "[{host = \"test\", hostName = [\"1.2.3.4\"] : Optional Text}]" `shouldConvertTo`
         "Host test\n     HostName 1.2.3.4\n"
+    describe "the user config" $ do
+      it "for a user value other than optional text" $
+        expectFailure "[{host = \"test\", user = 1234}]"
+      it "for a single user config" $
+        "[{host = \"test\", user = [\"admin\"] : Optional Text}]" `shouldConvertTo`
+        "Host test\n     User admin\n"
     it "handles a full example config" $ do
       dhall <-
         Data.Text.IO.readFile "./test/Dhall/fullExample.dhall" >>=

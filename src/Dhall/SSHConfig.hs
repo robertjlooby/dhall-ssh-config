@@ -79,5 +79,14 @@ parseHostField _ "hostName" e =
     (CompileError $
      "The \"hostName\" field should be an Optional Text value. Instead got " <>
      Dhall.Core.pretty e)
+parseHostField (Right acc) "user" (Dhall.Core.OptionalLit _ Nothing) =
+  return acc
+parseHostField (Right acc) "user" (Dhall.Core.OptionalLit _ (Just (Dhall.Core.TextLit (Dhall.Core.Chunks [] t)))) =
+  return (acc <> "     User " <> t <> "\n")
+parseHostField _ "user" e =
+  Left
+    (CompileError $
+     "The \"user\" field should be an Optional Text value. Instead got " <>
+     Dhall.Core.pretty e)
 parseHostField _ f _ =
   Left (CompileError $ "Unrecognized field \"" <> f <> "\"")

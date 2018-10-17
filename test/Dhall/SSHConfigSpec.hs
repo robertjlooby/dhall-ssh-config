@@ -38,11 +38,16 @@ spec = do
       it "for a record without a host config" $
         expectFailure "[{hostName = [\"1.2.3.4\"]}]"
       it "for a host value other than text" $ expectFailure "[{host = 2}]"
+      it "for multiple host value other than text" $
+        expectFailure "[{host = [1, 2]}]"
       it "for a single host config" $
         "[{host = \"test\"}]" `shouldConvertTo` "Host test\n"
       it "for multiple host configs" $
         "[{host = \"test\"}, {host = \"other\"}]" `shouldConvertTo`
         "Host test\n\nHost other\n"
+      it "for configs with multiple hosts" $
+        "[{host = [\"test\", \"test2\"]}, {host = [\"other\", \"other2\"]}]" `shouldConvertTo`
+        "Host test test2\n\nHost other other2\n"
     describe "the hostName config" $ do
       it "for a hostName value other than optional text" $
         expectFailure "[{host = \"test\", hostName = 1234}]"
@@ -60,6 +65,12 @@ spec = do
         Data.Text.IO.readFile "./test/Dhall/fullExample.dhall" >>=
         Dhall.inputExpr
       sshConfig <- Data.Text.IO.readFile "./test/Dhall/fullExample"
+      dhallToSSHConfig dhall `shouldBe` Right sshConfig
+    it "handles a full example config with multiple hosts per config" $ do
+      dhall <-
+        Data.Text.IO.readFile "./test/Dhall/fullExampleMultipleHosts.dhall" >>=
+        Dhall.inputExpr
+      sshConfig <- Data.Text.IO.readFile "./test/Dhall/fullExampleMultipleHosts"
       dhallToSSHConfig dhall `shouldBe` Right sshConfig
   it "the empty config is valid Dhall and doesn't add any configuration" $
     "[./emptySSHConfig.dhall // {host = \"test\"}]" `shouldConvertTo`

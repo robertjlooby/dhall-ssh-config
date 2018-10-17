@@ -56,16 +56,29 @@ parseHostFields fields =
   case InsOrd.lookup "host" fields of
     Nothing -> Left (CompileError "Every configuration needs a \"host\" field.")
     Just (Dhall.Core.TextLit (Dhall.Core.Chunks [] t)) ->
-      (("Host " <> t <> "\n") <>) <$>
+      (("Host " <> t <> "\n") <>) <$> body
+    Just (Dhall.Core.ListLit _ hosts) -> do
+      hosts' <- traverse getHost hosts
+      body' <- body
+      return $ "Host " <> fold (intersperse " " hosts') <> "\n" <> body'
+    Just e ->
+      Left
+        (CompileError $
+         "The \"host\" field should be a Text value or a List of Text values. Instead got " <>
+         Dhall.Core.pretty e)
+  where
+    getHost :: Expr s X -> Either CompileError Text
+    getHost (Dhall.Core.TextLit (Dhall.Core.Chunks [] t)) = return t
+    getHost e =
+      Left
+        (CompileError $
+         "Values in the \"host\" list should be Text values. Instead got " <>
+         Dhall.Core.pretty e)
+    body =
       InsOrd.foldlWithKey'
         parseHostField
         (return "")
         (InsOrd.delete "host" fields)
-    Just e ->
-      Left
-        (CompileError $
-         "The \"host\" field should be a Text value. Instead got " <>
-         Dhall.Core.pretty e)
 
 parseHostField ::
      Either CompileError Text -> Text -> Expr s X -> Either CompileError Text

@@ -1,0 +1,7 @@
+Host server1
+     HostName server1.test
+
+Host server2
+     HostName server2.test
+
+Host server3

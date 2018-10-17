@@ -24,6 +24,11 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+  - containers
+  - dhall
+  - insert-ordered-containers
+  - text
 
 executables:
   dhall-to-ssh-config:
@@ -34,7 +39,9 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - dhall
     - dhall-ssh-config
+    - text
 
 tests:
   dhall-ssh-config-test:
@@ -45,5 +52,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - dhall
     - dhall-ssh-config
     - hspec
+    - text

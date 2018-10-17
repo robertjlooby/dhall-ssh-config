@@ -54,6 +54,12 @@ spec = do
       it "for a single hostName config" $
         "[{host = \"test\", hostName = [\"1.2.3.4\"] : Optional Text}]" `shouldConvertTo`
         "Host test\n     HostName 1.2.3.4\n"
+    describe "the port config" $ do
+      it "for a port value other than optional natural" $
+        expectFailure "[{host = \"test\", port = -1234}]"
+      it "for a single port config" $
+        "[{host = \"test\", port = [123] : Optional Natural}]" `shouldConvertTo`
+        "Host test\n     Port 123\n"
     describe "the user config" $ do
       it "for a user value other than optional text" $
         expectFailure "[{host = \"test\", user = 1234}]"

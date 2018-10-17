@@ -6,3 +6,4 @@ Host server1
 
 Host server2
      HostName server2.test
+     Port 123

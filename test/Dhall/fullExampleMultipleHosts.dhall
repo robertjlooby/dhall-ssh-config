@@ -8,5 +8,7 @@ in  [ e ⫽ { host = [ "*" ], user = [ "admin" ] : Optional Text }
             [ "server2", "server2v2", "server2v3" ]
         , hostName =
             [ "server2.test" ] : Optional Text
+        , port =
+            [ 123 ] : Optional Natural
         }
     ]

@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/dhall-ssh-config
   docker:
-    - image: fpco/stack-build:lts-12.11
+    - image: fpco/stack-build:lts-12.13
 
 version: 2
 jobs:

@@ -36,7 +36,7 @@ spec = do
       it "for the wrong top level element" $ expectFailure "{=}"
     describe "the host config" $ do
       it "for a record without a host config" $
-        expectFailure "[{hostName = [\"1.2.3.4\"]}]"
+        expectFailure "[{hostName = Some \"1.2.3.4\"}]"
       it "for a host value other than text" $ expectFailure "[{host = 2}]"
       it "for multiple host value other than text" $
         expectFailure "[{host = [1, 2]}]"
@@ -52,19 +52,19 @@ spec = do
       it "for a hostName value other than optional text" $
         expectFailure "[{host = \"test\", hostName = 1234}]"
       it "for a single hostName config" $
-        "[{host = \"test\", hostName = [\"1.2.3.4\"] : Optional Text}]" `shouldConvertTo`
+        "[{host = \"test\", hostName = Some \"1.2.3.4\"}]" `shouldConvertTo`
         "Host test\n     HostName 1.2.3.4\n"
     describe "the port config" $ do
       it "for a port value other than optional natural" $
         expectFailure "[{host = \"test\", port = -1234}]"
       it "for a single port config" $
-        "[{host = \"test\", port = [123] : Optional Natural}]" `shouldConvertTo`
+        "[{host = \"test\", port = Some 123}]" `shouldConvertTo`
         "Host test\n     Port 123\n"
     describe "the user config" $ do
       it "for a user value other than optional text" $
         expectFailure "[{host = \"test\", user = 1234}]"
       it "for a single user config" $
-        "[{host = \"test\", user = [\"admin\"] : Optional Text}]" `shouldConvertTo`
+        "[{host = \"test\", user = Some \"admin\"}]" `shouldConvertTo`
         "Host test\n     User admin\n"
     it "handles a full example config" $ do
       dhall <-

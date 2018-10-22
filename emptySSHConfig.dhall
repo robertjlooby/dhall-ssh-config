@@ -1,7 +1,1 @@
-{ hostName =
-    [] : Optional Text
-, port =
-    [] : Optional Natural
-, user =
-    [] : Optional Text
-}
+{ hostName = None Text, port = None Natural, user = None Text }

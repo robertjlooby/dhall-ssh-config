@@ -88,6 +88,14 @@ parseHostField "hostName" e =
     (CompileError $
      "The \"hostName\" field should be an Optional Text value. Instead got " <>
      Dhall.Core.pretty e)
+parseHostField "identityFile" (Dhall.Core.App Dhall.Core.None _) = return ""
+parseHostField "identityFile" (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
+  return ("     IdentityFile " <> t <> "\n")
+parseHostField "identityFile" e =
+  Left
+    (CompileError $
+     "The \"identityFile\" field should be an Optional Text value. Instead got " <>
+     Dhall.Core.pretty e)
 parseHostField "port" (Dhall.Core.App Dhall.Core.None _) = return ""
 parseHostField "port" (Dhall.Core.Some (Dhall.Core.NaturalLit n)) =
   return ("     Port " <> Data.Text.pack (show n) <> "\n")

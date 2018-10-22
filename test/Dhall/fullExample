@@ -1,4 +1,5 @@
 Host *
+     IdentityFile ~/.ssh/id_rsa
      User admin
 
 Host server1
@@ -6,4 +7,5 @@ Host server1
 
 Host server2
      HostName server2.test
+     IdentityFile ~/.ssh/other_id_rsa
      Port 123

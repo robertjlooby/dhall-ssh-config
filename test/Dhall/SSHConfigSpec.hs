@@ -54,6 +54,12 @@ spec = do
       it "for a single hostName config" $
         "[{host = \"test\", hostName = Some \"1.2.3.4\"}]" `shouldConvertTo`
         "Host test\n     HostName 1.2.3.4\n"
+    describe "the identityFile config" $ do
+      it "for an identityFile value other than optional text" $
+        expectFailure "[{host = \"test\", identityFile = 1234}]"
+      it "for a single identityFile config" $
+        "[{host = \"test\", identityFile = Some \"~/.ssh/id_rsa\"}]" `shouldConvertTo`
+        "Host test\n     IdentityFile ~/.ssh/id_rsa\n"
     describe "the port config" $ do
       it "for a port value other than optional natural" $
         expectFailure "[{host = \"test\", port = -1234}]"

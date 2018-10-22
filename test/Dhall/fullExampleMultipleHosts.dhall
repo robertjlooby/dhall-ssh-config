@@ -1,4 +1,4 @@
-    let e = ./emptySSHConfig.dhall
+    let e = ./resources/EmptySSHConfig.dhall
 
 in  let AddKeysToAgent = constructors ./resources/AddKeysToAgent.dhall
 

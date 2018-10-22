@@ -1,4 +1,4 @@
-    let AddKeysToAgent = ./resources/AddKeysToAgent.dhall
+    let AddKeysToAgent = ./AddKeysToAgent.dhall
 
 in  { addKeysToAgent =
         None AddKeysToAgent

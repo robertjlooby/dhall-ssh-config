@@ -103,5 +103,5 @@ spec = do
       sshConfig <- Data.Text.IO.readFile "./test/Dhall/fullExampleMultipleHosts"
       dhallToSSHConfig dhall `shouldBe` Right sshConfig
   it "the empty config is valid Dhall and doesn't add any configuration" $
-    "[./emptySSHConfig.dhall // {host = \"test\"}]" `shouldConvertTo`
+    "[./resources/EmptySSHConfig.dhall // {host = \"test\"}]" `shouldConvertTo`
     "Host test\n"

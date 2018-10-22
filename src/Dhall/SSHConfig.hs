@@ -80,6 +80,20 @@ parseHostFields fields =
       return $ Map.foldMapWithKey (flip const) parsedFields
 
 parseHostField :: Text -> Expr s X -> Either CompileError Text
+parseHostField "addKeysToAgent" (Dhall.Core.App Dhall.Core.None _) = return ""
+parseHostField "addKeysToAgent" (Dhall.Core.Some (Dhall.Core.UnionLit "Ask" _ _)) =
+  return "     AddKeysToAgent ask\n"
+parseHostField "addKeysToAgent" (Dhall.Core.Some (Dhall.Core.UnionLit "Confirm" _ _)) =
+  return "     AddKeysToAgent confirm\n"
+parseHostField "addKeysToAgent" (Dhall.Core.Some (Dhall.Core.UnionLit "No" _ _)) =
+  return "     AddKeysToAgent no\n"
+parseHostField "addKeysToAgent" (Dhall.Core.Some (Dhall.Core.UnionLit "Yes" _ _)) =
+  return "     AddKeysToAgent yes\n"
+parseHostField "addKeysToAgent" e =
+  Left
+    (CompileError $
+     "The \"addKeysToAgent\" field should be an Optional AddKeysToAgent value. Instead got " <>
+     Dhall.Core.pretty e)
 parseHostField "hostName" (Dhall.Core.App Dhall.Core.None _) = return ""
 parseHostField "hostName" (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
   return ("     HostName " <> t <> "\n")

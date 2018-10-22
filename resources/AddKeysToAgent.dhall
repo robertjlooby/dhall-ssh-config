@@ -1,0 +1,1 @@
+< Ask : {} | Confirm : {} | No : {} | Yes : {} >

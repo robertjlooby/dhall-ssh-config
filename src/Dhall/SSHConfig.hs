@@ -81,49 +81,47 @@ parseHostFields fields =
       return $ Map.foldMapWithKey (flip const) parsedFields
 
 parseHostField :: Text -> Expr s X -> Either CompileError Text
-parseHostField "addKeysToAgent" e =
-  parseEnumField
-    "addKeysToAgent"
-    "AddKeysToAgent"
-    ["ask", "confirm", "no", "yes"]
-    e
-parseHostField "hostName" e = parseTextField "hostName" "HostName" e
-parseHostField "identityFile" e = parseTextField "identityFile" "IdentityFile" e
-parseHostField "port" e = parseNaturalField "port" "Port" e
-parseHostField "useKeychain" e =
-  parseEnumField "useKeychain" "UseKeychain" ["no", "yes"] e
-parseHostField "user" e = parseTextField "user" "User" e
+parseHostField f@"addKeysToAgent" e =
+  parseEnumField f ["ask", "confirm", "no", "yes"] e
+parseHostField f@"hostName" e = parseTextField f e
+parseHostField f@"identityFile" e = parseTextField f e
+parseHostField f@"port" e = parseNaturalField f e
+parseHostField f@"useKeychain" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"user" e = parseTextField f e
 parseHostField f _ = Left (CompileError $ "Unrecognized field \"" <> f <> "\"")
 
-parseEnumField :: Text -> Text -> [Text] -> Expr s X -> Either CompileError Text
-parseEnumField _ _ _ (Dhall.Core.App Dhall.Core.None _) = return ""
-parseEnumField field label options (Dhall.Core.Some e@(Dhall.Core.TextLit (Dhall.Core.Chunks [] t)))
-  | t `elem` options = format label t
+parseEnumField :: Text -> [Text] -> Expr s X -> Either CompileError Text
+parseEnumField _ _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseEnumField field options (Dhall.Core.Some e@(Dhall.Core.TextLit (Dhall.Core.Chunks [] t)))
+  | t `elem` options = format field t
   | otherwise =
     typeError
       field
       ("Optional Text (one of: " <> fold (List.intersperse ", " options) <> ")")
       e
-parseEnumField field _ options e =
+parseEnumField field options e =
   typeError
     field
     ("Optional Text (one of: " <> fold (List.intersperse ", " options) <> ")")
     e
 
-parseNaturalField :: Text -> Text -> Expr s X -> Either CompileError Text
-parseNaturalField _ _ (Dhall.Core.App Dhall.Core.None _) = return ""
-parseNaturalField _ label (Dhall.Core.Some (Dhall.Core.NaturalLit n)) =
-  format label $ Data.Text.pack (show n)
-parseNaturalField field _ e = typeError field "Optional Natural" e
+parseNaturalField :: Text -> Expr s X -> Either CompileError Text
+parseNaturalField _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseNaturalField field (Dhall.Core.Some (Dhall.Core.NaturalLit n)) =
+  format field $ Data.Text.pack (show n)
+parseNaturalField field e = typeError field "Optional Natural" e
 
-parseTextField :: Text -> Text -> Expr s X -> Either CompileError Text
-parseTextField _ _ (Dhall.Core.App Dhall.Core.None _) = return ""
-parseTextField _ label (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
-  format label t
-parseTextField field _ e = typeError field "Optional Text" e
+parseTextField :: Text -> Expr s X -> Either CompileError Text
+parseTextField _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseTextField field (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
+  format field t
+parseTextField field e = typeError field "Optional Text" e
 
 format :: Text -> Text -> Either CompileError Text
-format label value = return $ "     " <> label <> " " <> value <> "\n"
+format field value = return $ "     " <> label <> " " <> value <> "\n"
+  where
+    firstChar = Data.Text.toUpper . Data.Text.take 1 $ field
+    label = firstChar <> Data.Text.drop 1 field
 
 typeError :: Text -> Text -> Expr s X -> Either CompileError Text
 typeError field _type e =

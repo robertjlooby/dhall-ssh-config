@@ -25,10 +25,7 @@ expectFailure input = do
 
 shouldConvertTo :: Dhall.Text -> Dhall.Text -> Expectation
 shouldConvertTo input output = do
-  expr <-
-    Dhall.inputExpr
-      ("let AddKeysToAgent = constructors ./resources/AddKeysToAgent.dhall in " <>
-       input)
+  expr <- Dhall.inputExpr input
   dhallToSSHConfig expr `shouldBe` Right output
 
 spec :: Spec
@@ -52,20 +49,22 @@ spec = do
         "[{host = [\"test\", \"test2\"]}, {host = [\"other\", \"other2\"]}]" `shouldConvertTo`
         "Host test test2\n\nHost other other2\n"
     describe "the addKeysToAgent config" $ do
-      it "for an addKeysToAgent value other than optional AddKeysToAgent" $
+      it "for an addKeysToAgent value other than optional text" $
         expectFailure "[{host = \"test\", addKeysToAgent = 1234}]"
-      it "for a single addKeysToAgent config of Ask" $
-        "[{host = \"test\", addKeysToAgent = Some (AddKeysToAgent.Ask {=})}]" `shouldConvertTo`
+      it "for a single addKeysToAgent config of 'ask'" $
+        "[{host = \"test\", addKeysToAgent = Some \"ask\"}]" `shouldConvertTo`
         "Host test\n     AddKeysToAgent ask\n"
-      it "for a single addKeysToAgent config of Confirm" $
-        "[{host = \"test\", addKeysToAgent = Some (AddKeysToAgent.Confirm {=})}]" `shouldConvertTo`
+      it "for a single addKeysToAgent config of 'confirm'" $
+        "[{host = \"test\", addKeysToAgent = Some \"confirm\"}]" `shouldConvertTo`
         "Host test\n     AddKeysToAgent confirm\n"
-      it "for a single addKeysToAgent config of No" $
-        "[{host = \"test\", addKeysToAgent = Some (AddKeysToAgent.No {=})}]" `shouldConvertTo`
+      it "for a single addKeysToAgent config of 'no'" $
+        "[{host = \"test\", addKeysToAgent = Some \"no\"}]" `shouldConvertTo`
         "Host test\n     AddKeysToAgent no\n"
-      it "for a single addKeysToAgent config of Yes" $
-        "[{host = \"test\", addKeysToAgent = Some (AddKeysToAgent.Yes {=})}]" `shouldConvertTo`
+      it "for a single addKeysToAgent config of 'yes'" $
+        "[{host = \"test\", addKeysToAgent = Some \"yes\"}]" `shouldConvertTo`
         "Host test\n     AddKeysToAgent yes\n"
+      it "for an addKeysToAgent value other than optional enum value" $
+        expectFailure "[{host = \"test\", addKeysToAgent = Some \"other\"}]"
     describe "the hostName config" $ do
       it "for a hostName value other than optional text" $
         expectFailure "[{host = \"test\", hostName = 1234}]"

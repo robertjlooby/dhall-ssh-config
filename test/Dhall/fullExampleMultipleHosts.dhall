@@ -1,12 +1,10 @@
     let e = ./resources/EmptySSHConfig.dhall
 
-in  let AddKeysToAgent = constructors ./resources/AddKeysToAgent.dhall
-
 in  [   e
       ⫽ { host =
             [ "*" ]
         , addKeysToAgent =
-            Some (AddKeysToAgent.Yes {=})
+            Some "yes"
         , identityFile =
             Some "~/.ssh/id_rsa"
         , user =
@@ -17,7 +15,7 @@ in  [   e
       ⫽ { host =
             [ "server2", "server2v2", "server2v3" ]
         , addKeysToAgent =
-            Some (AddKeysToAgent.No {=})
+            Some "no"
         , hostName =
             Some "server2.test"
         , identityFile =

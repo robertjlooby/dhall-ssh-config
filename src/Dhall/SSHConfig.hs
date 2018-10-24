@@ -5,7 +5,8 @@ module Dhall.SSHConfig
   ) where
 
 import Data.Foldable (fold)
-import Data.Sequence (intersperse)
+import Data.List as List
+import Data.Sequence as Seq
 import Data.Text (Text)
 import qualified Data.Text
 import Dhall.Core (Expr)
@@ -34,7 +35,7 @@ parseList e =
     Dhall.Core.ListLit _ a ->
       case traverse parseHost a of
         Left e -> Left e
-        Right s -> return $ fold $ intersperse "\n" s
+        Right s -> return $ fold $ Seq.intersperse "\n" s
     _ ->
       Left
         (CompileError $
@@ -60,7 +61,7 @@ parseHostFields fields =
     Just (Dhall.Core.ListLit _ hosts) -> do
       hosts' <- traverse getHost hosts
       body' <- body
-      return $ "Host " <> fold (intersperse " " hosts') <> "\n" <> body'
+      return $ "Host " <> fold (Seq.intersperse " " hosts') <> "\n" <> body'
     Just e ->
       Left
         (CompileError $
@@ -80,50 +81,52 @@ parseHostFields fields =
       return $ Map.foldMapWithKey (flip const) parsedFields
 
 parseHostField :: Text -> Expr s X -> Either CompileError Text
-parseHostField "addKeysToAgent" (Dhall.Core.App Dhall.Core.None _) = return ""
-parseHostField "addKeysToAgent" (Dhall.Core.Some (Dhall.Core.UnionLit "Ask" _ _)) =
-  return "     AddKeysToAgent ask\n"
-parseHostField "addKeysToAgent" (Dhall.Core.Some (Dhall.Core.UnionLit "Confirm" _ _)) =
-  return "     AddKeysToAgent confirm\n"
-parseHostField "addKeysToAgent" (Dhall.Core.Some (Dhall.Core.UnionLit "No" _ _)) =
-  return "     AddKeysToAgent no\n"
-parseHostField "addKeysToAgent" (Dhall.Core.Some (Dhall.Core.UnionLit "Yes" _ _)) =
-  return "     AddKeysToAgent yes\n"
 parseHostField "addKeysToAgent" e =
-  Left
-    (CompileError $
-     "The \"addKeysToAgent\" field should be an Optional AddKeysToAgent value. Instead got " <>
-     Dhall.Core.pretty e)
-parseHostField "hostName" (Dhall.Core.App Dhall.Core.None _) = return ""
-parseHostField "hostName" (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
-  return ("     HostName " <> t <> "\n")
-parseHostField "hostName" e =
-  Left
-    (CompileError $
-     "The \"hostName\" field should be an Optional Text value. Instead got " <>
-     Dhall.Core.pretty e)
-parseHostField "identityFile" (Dhall.Core.App Dhall.Core.None _) = return ""
-parseHostField "identityFile" (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
-  return ("     IdentityFile " <> t <> "\n")
-parseHostField "identityFile" e =
-  Left
-    (CompileError $
-     "The \"identityFile\" field should be an Optional Text value. Instead got " <>
-     Dhall.Core.pretty e)
-parseHostField "port" (Dhall.Core.App Dhall.Core.None _) = return ""
-parseHostField "port" (Dhall.Core.Some (Dhall.Core.NaturalLit n)) =
-  return ("     Port " <> Data.Text.pack (show n) <> "\n")
-parseHostField "port" e =
-  Left
-    (CompileError $
-     "The \"port\" field should be an Optional Natural value. Instead got " <>
-     Dhall.Core.pretty e)
-parseHostField "user" (Dhall.Core.App Dhall.Core.None _) = return ""
-parseHostField "user" (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
-  return ("     User " <> t <> "\n")
-parseHostField "user" e =
-  Left
-    (CompileError $
-     "The \"user\" field should be an Optional Text value. Instead got " <>
-     Dhall.Core.pretty e)
+  parseEnumField
+    "addKeysToAgent"
+    "AddKeysToAgent"
+    ["ask", "confirm", "no", "yes"]
+    e
+parseHostField "hostName" e = parseTextField "hostName" "HostName" e
+parseHostField "identityFile" e = parseTextField "identityFile" "IdentityFile" e
+parseHostField "port" e = parseNaturalField "port" "Port" e
+parseHostField "user" e = parseTextField "user" "User" e
 parseHostField f _ = Left (CompileError $ "Unrecognized field \"" <> f <> "\"")
+
+parseEnumField :: Text -> Text -> [Text] -> Expr s X -> Either CompileError Text
+parseEnumField _ _ _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseEnumField field label options (Dhall.Core.Some e@(Dhall.Core.TextLit (Dhall.Core.Chunks [] t)))
+  | t `elem` options = format label t
+  | otherwise =
+    typeError
+      field
+      ("Optional Text (one of: " <> fold (List.intersperse ", " options) <> ")")
+      e
+parseEnumField field _ options e =
+  typeError
+    field
+    ("Optional Text (one of: " <> fold (List.intersperse ", " options) <> ")")
+    e
+
+parseNaturalField :: Text -> Text -> Expr s X -> Either CompileError Text
+parseNaturalField _ _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseNaturalField _ label (Dhall.Core.Some (Dhall.Core.NaturalLit n)) =
+  format label $ Data.Text.pack (show n)
+parseNaturalField field _ e = typeError field "Optional Natural" e
+
+parseTextField :: Text -> Text -> Expr s X -> Either CompileError Text
+parseTextField _ _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseTextField _ label (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
+  format label t
+parseTextField field _ e = typeError field "Optional Text" e
+
+format :: Text -> Text -> Either CompileError Text
+format label value = return $ "     " <> label <> " " <> value <> "\n"
+
+typeError :: Text -> Text -> Expr s X -> Either CompileError Text
+typeError field _type e =
+  Left
+    (CompileError $
+     "The \"" <> field <> "\" field should be an " <> _type <>
+     " value. Instead got " <>
+     Dhall.Core.pretty e)

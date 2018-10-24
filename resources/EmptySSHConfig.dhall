@@ -1,13 +1,11 @@
-    let AddKeysToAgent = ./AddKeysToAgent.dhall
-
-in  { addKeysToAgent =
-        None AddKeysToAgent
-    , hostName =
-        None Text
-    , identityFile =
-        None Text
-    , port =
-        None Natural
-    , user =
-        None Text
-    }
+{ addKeysToAgent =
+    None Text
+, hostName =
+    None Text
+, identityFile =
+    None Text
+, port =
+    None Natural
+, user =
+    None Text
+}

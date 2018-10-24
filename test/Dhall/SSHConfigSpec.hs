@@ -83,6 +83,17 @@ spec = do
       it "for a single port config" $
         "[{host = \"test\", port = Some 123}]" `shouldConvertTo`
         "Host test\n     Port 123\n"
+    describe "the useKeychain config" $ do
+      it "for an useKeychain value other than optional text" $
+        expectFailure "[{host = \"test\", useKeychain = 1234}]"
+      it "for a single UseKeychain config of 'no'" $
+        "[{host = \"test\", useKeychain = Some \"no\"}]" `shouldConvertTo`
+        "Host test\n     UseKeychain no\n"
+      it "for a single useKeychain config of 'yes'" $
+        "[{host = \"test\", useKeychain = Some \"yes\"}]" `shouldConvertTo`
+        "Host test\n     UseKeychain yes\n"
+      it "for an useKeychain value other than optional enum value" $
+        expectFailure "[{host = \"test\", useKeychain = Some \"other\"}]"
     describe "the user config" $ do
       it "for a user value other than optional text" $
         expectFailure "[{host = \"test\", user = 1234}]"

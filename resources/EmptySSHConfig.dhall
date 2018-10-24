@@ -6,6 +6,8 @@
     None Text
 , port =
     None Natural
+, useKeychain =
+    None Text
 , user =
     None Text
 }

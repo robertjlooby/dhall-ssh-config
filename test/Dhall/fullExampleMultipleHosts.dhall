@@ -7,6 +7,8 @@ in  [   e
             Some "yes"
         , identityFile =
             Some "~/.ssh/id_rsa"
+        , useKeychain =
+            Some "yes"
         , user =
             Some "admin"
         }
@@ -22,5 +24,7 @@ in  [   e
             Some "~/.ssh/other_id_rsa"
         , port =
             Some 123
+        , useKeychain =
+            Some "no"
         }
     ]

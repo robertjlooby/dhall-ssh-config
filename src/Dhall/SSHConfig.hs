@@ -90,6 +90,8 @@ parseHostField "addKeysToAgent" e =
 parseHostField "hostName" e = parseTextField "hostName" "HostName" e
 parseHostField "identityFile" e = parseTextField "identityFile" "IdentityFile" e
 parseHostField "port" e = parseNaturalField "port" "Port" e
+parseHostField "useKeychain" e =
+  parseEnumField "useKeychain" "UseKeychain" ["no", "yes"] e
 parseHostField "user" e = parseTextField "user" "User" e
 parseHostField f _ = Left (CompileError $ "Unrecognized field \"" <> f <> "\"")
 

@@ -1,6 +1,7 @@
 Host *
      AddKeysToAgent yes
      IdentityFile ~/.ssh/id_rsa
+     UseKeychain yes
      User admin
 
 Host server1
@@ -11,3 +12,4 @@ Host server2 server2v2 server2v3
      HostName server2.test
      IdentityFile ~/.ssh/other_id_rsa
      Port 123
+     UseKeychain no

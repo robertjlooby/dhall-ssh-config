@@ -5,13 +5,14 @@ module Dhall.SSHConfig
   ) where
 
 import Data.Foldable (fold)
-import Data.HashMap.Strict.InsOrd (InsOrdHashMap)
-import Data.HashMap.Strict.InsOrd as InsOrd
-import Data.Sequence (intersperse)
+import Data.List as List
+import Data.Sequence as Seq
 import Data.Text (Text)
 import qualified Data.Text
 import Dhall.Core (Expr)
 import qualified Dhall.Core
+import Dhall.Map (Map)
+import Dhall.Map as Map
 import Dhall.TypeCheck (X)
 
 newtype CompileError =
@@ -34,7 +35,7 @@ parseList e =
     Dhall.Core.ListLit _ a ->
       case traverse parseHost a of
         Left e -> Left e
-        Right s -> return $ fold $ intersperse "\n" s
+        Right s -> return $ fold $ Seq.intersperse "\n" s
     _ ->
       Left
         (CompileError $
@@ -51,16 +52,16 @@ parseHost e =
          "Each host configuration should be a Record. Instead got " <>
          Dhall.Core.pretty e)
 
-parseHostFields :: InsOrdHashMap Text (Expr s X) -> Either CompileError Text
+parseHostFields :: Map Text (Expr s X) -> Either CompileError Text
 parseHostFields fields =
-  case InsOrd.lookup "host" fields of
+  case Map.lookup "host" fields of
     Nothing -> Left (CompileError "Every configuration needs a \"host\" field.")
     Just (Dhall.Core.TextLit (Dhall.Core.Chunks [] t)) ->
       (("Host " <> t <> "\n") <>) <$> body
     Just (Dhall.Core.ListLit _ hosts) -> do
       hosts' <- traverse getHost hosts
       body' <- body
-      return $ "Host " <> fold (intersperse " " hosts') <> "\n" <> body'
+      return $ "Host " <> fold (Seq.intersperse " " hosts') <> "\n" <> body'
     Just e ->
       Left
         (CompileError $
@@ -74,41 +75,58 @@ parseHostFields fields =
         (CompileError $
          "Values in the \"host\" list should be Text values. Instead got " <>
          Dhall.Core.pretty e)
-    body =
-      InsOrd.foldlWithKey'
-        parseHostField
-        (return "")
-        (InsOrd.delete "host" fields)
+    body = do
+      parsedFields <-
+        Map.traverseWithKey parseHostField (Map.delete "host" fields)
+      return $ Map.foldMapWithKey (flip const) parsedFields
 
-parseHostField ::
-     Either CompileError Text -> Text -> Expr s X -> Either CompileError Text
-parseHostField (Left e) _ _ = Left e
-parseHostField (Right acc) "hostName" (Dhall.Core.OptionalLit _ Nothing) =
-  return acc
-parseHostField (Right acc) "hostName" (Dhall.Core.OptionalLit _ (Just (Dhall.Core.TextLit (Dhall.Core.Chunks [] t)))) =
-  return (acc <> "     HostName " <> t <> "\n")
-parseHostField _ "hostName" e =
+parseHostField :: Text -> Expr s X -> Either CompileError Text
+parseHostField f@"addKeysToAgent" e =
+  parseEnumField f ["ask", "confirm", "no", "yes"] e
+parseHostField f@"hostName" e = parseTextField f e
+parseHostField f@"identityFile" e = parseTextField f e
+parseHostField f@"port" e = parseNaturalField f e
+parseHostField f@"useKeychain" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"user" e = parseTextField f e
+parseHostField f _ = Left (CompileError $ "Unrecognized field \"" <> f <> "\"")
+
+parseEnumField :: Text -> [Text] -> Expr s X -> Either CompileError Text
+parseEnumField _ _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseEnumField field options (Dhall.Core.Some e@(Dhall.Core.TextLit (Dhall.Core.Chunks [] t)))
+  | t `elem` options = format field t
+  | otherwise =
+    typeError
+      field
+      ("Optional Text (one of: " <> fold (List.intersperse ", " options) <> ")")
+      e
+parseEnumField field options e =
+  typeError
+    field
+    ("Optional Text (one of: " <> fold (List.intersperse ", " options) <> ")")
+    e
+
+parseNaturalField :: Text -> Expr s X -> Either CompileError Text
+parseNaturalField _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseNaturalField field (Dhall.Core.Some (Dhall.Core.NaturalLit n)) =
+  format field $ Data.Text.pack (show n)
+parseNaturalField field e = typeError field "Optional Natural" e
+
+parseTextField :: Text -> Expr s X -> Either CompileError Text
+parseTextField _ (Dhall.Core.App Dhall.Core.None _) = return ""
+parseTextField field (Dhall.Core.Some (Dhall.Core.TextLit (Dhall.Core.Chunks [] t))) =
+  format field t
+parseTextField field e = typeError field "Optional Text" e
+
+format :: Text -> Text -> Either CompileError Text
+format field value = return $ "     " <> label <> " " <> value <> "\n"
+  where
+    firstChar = Data.Text.toUpper . Data.Text.take 1 $ field
+    label = firstChar <> Data.Text.drop 1 field
+
+typeError :: Text -> Text -> Expr s X -> Either CompileError Text
+typeError field _type e =
   Left
     (CompileError $
-     "The \"hostName\" field should be an Optional Text value. Instead got " <>
+     "The \"" <> field <> "\" field should be an " <> _type <>
+     " value. Instead got " <>
      Dhall.Core.pretty e)
-parseHostField (Right acc) "port" (Dhall.Core.OptionalLit _ Nothing) =
-  return acc
-parseHostField (Right acc) "port" (Dhall.Core.OptionalLit _ (Just (Dhall.Core.NaturalLit n))) =
-  return (acc <> "     Port " <> Data.Text.pack (show n) <> "\n")
-parseHostField _ "port" e =
-  Left
-    (CompileError $
-     "The \"port\" field should be an Optional Natural value. Instead got " <>
-     Dhall.Core.pretty e)
-parseHostField (Right acc) "user" (Dhall.Core.OptionalLit _ Nothing) =
-  return acc
-parseHostField (Right acc) "user" (Dhall.Core.OptionalLit _ (Just (Dhall.Core.TextLit (Dhall.Core.Chunks [] t)))) =
-  return (acc <> "     User " <> t <> "\n")
-parseHostField _ "user" e =
-  Left
-    (CompileError $
-     "The \"user\" field should be an Optional Text value. Instead got " <>
-     Dhall.Core.pretty e)
-parseHostField _ f _ =
-  Left (CompileError $ "Unrecognized field \"" <> f <> "\"")

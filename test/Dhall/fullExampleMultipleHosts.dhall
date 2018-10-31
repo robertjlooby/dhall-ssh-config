@@ -1,14 +1,30 @@
-    let e = ./emptySSHConfig.dhall
+    let e = ./resources/EmptySSHConfig.dhall
 
-in  [ e ⫽ { host = [ "*" ], user = [ "admin" ] : Optional Text }
-    ,   e
-      ⫽ { host = [ "server1" ], hostName = [ "server1.test" ] : Optional Text }
+in  [   e
+      ⫽ { host =
+            [ "*" ]
+        , addKeysToAgent =
+            Some "yes"
+        , identityFile =
+            Some "~/.ssh/id_rsa"
+        , useKeychain =
+            Some "yes"
+        , user =
+            Some "admin"
+        }
+    , e ⫽ { host = [ "server1" ], hostName = Some "server1.test" }
     ,   e
       ⫽ { host =
             [ "server2", "server2v2", "server2v3" ]
+        , addKeysToAgent =
+            Some "no"
         , hostName =
-            [ "server2.test" ] : Optional Text
+            Some "server2.test"
+        , identityFile =
+            Some "~/.ssh/other_id_rsa"
         , port =
-            [ 123 ] : Optional Natural
+            Some 123
+        , useKeychain =
+            Some "no"
         }
     ]

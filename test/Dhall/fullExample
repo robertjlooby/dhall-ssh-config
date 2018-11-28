@@ -10,6 +10,7 @@ Host server1
 Host server2
      AddKeysToAgent no
      AddressFamily any
+     BatchMode yes
      HostName server2.test
      IdentityFile ~/.ssh/other_id_rsa
      Port 123

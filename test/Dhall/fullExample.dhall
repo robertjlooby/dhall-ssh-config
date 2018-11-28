@@ -20,6 +20,8 @@ in  [   e
             Some "no"
         , addressFamily =
             Some "any"
+        , batchMode =
+            Some "yes"
         , hostName =
             Some "server2.test"
         , port =

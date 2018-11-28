@@ -2,6 +2,8 @@
     None Text
 , addressFamily =
     None Text
+, batchMode =
+    None Text
 , hostName =
     None Text
 , identityFile =

@@ -1,5 +1,7 @@
 { addKeysToAgent =
     None Text
+, addressFamily =
+    None Text
 , hostName =
     None Text
 , identityFile =

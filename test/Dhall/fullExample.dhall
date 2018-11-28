@@ -18,6 +18,8 @@ in  [   e
             "server2"
         , addKeysToAgent =
             Some "no"
+        , addressFamily =
+            Some "any"
         , hostName =
             Some "server2.test"
         , port =

@@ -83,6 +83,7 @@ parseHostFields fields =
 parseHostField :: Text -> Expr s X -> Either CompileError Text
 parseHostField f@"addKeysToAgent" e =
   parseEnumField f ["ask", "confirm", "no", "yes"] e
+parseHostField f@"addressFamily" e = parseEnumField f ["any", "inet", "inet6"] e
 parseHostField f@"hostName" e = parseTextField f e
 parseHostField f@"identityFile" e = parseTextField f e
 parseHostField f@"port" e = parseNaturalField f e

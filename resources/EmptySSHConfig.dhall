@@ -4,6 +4,8 @@
     None Text
 , batchMode =
     None Text
+, bindAddress =
+    None Text
 , hostName =
     None Text
 , identityFile =

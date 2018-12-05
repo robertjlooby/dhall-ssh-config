@@ -22,6 +22,8 @@ in  [   e
             Some "any"
         , batchMode =
             Some "yes"
+        , bindAddress =
+            Some "localhost"
         , hostName =
             Some "server2.test"
         , port =

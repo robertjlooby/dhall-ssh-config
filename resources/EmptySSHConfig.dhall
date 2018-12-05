@@ -6,6 +6,8 @@
     None Text
 , bindAddress =
     None Text
+, bindInterface =
+    None Text
 , hostName =
     None Text
 , identityFile =

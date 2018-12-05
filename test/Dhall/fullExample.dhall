@@ -24,6 +24,8 @@ in  [   e
             Some "yes"
         , bindAddress =
             Some "localhost"
+        , bindInterface =
+            Some "test"
         , hostName =
             Some "server2.test"
         , port =

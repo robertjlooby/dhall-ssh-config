@@ -86,6 +86,7 @@ parseHostField f@"addKeysToAgent" e =
 parseHostField f@"addressFamily" e = parseEnumField f ["any", "inet", "inet6"] e
 parseHostField f@"batchMode" e = parseEnumField f ["no", "yes"] e
 parseHostField f@"bindAddress" e = parseTextField f e
+parseHostField f@"bindInterface" e = parseTextField f e
 parseHostField f@"hostName" e = parseTextField f e
 parseHostField f@"identityFile" e = parseTextField f e
 parseHostField f@"port" e = parseNaturalField f e

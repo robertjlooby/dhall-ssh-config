@@ -83,11 +83,132 @@ parseHostFields fields =
 parseHostField :: Text -> Expr s X -> Either CompileError Text
 parseHostField f@"addKeysToAgent" e =
   parseEnumField f ["ask", "confirm", "no", "yes"] e
+parseHostField f@"addressFamily" e = parseEnumField f ["any", "inet", "inet6"] e
+parseHostField f@"batchMode" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"bindAddress" e = parseTextField f e
+parseHostField f@"bindInterface" e = parseTextField f e
+parseHostField f@"cASignatureAlgorithms" e = parseTextField f e
+parseHostField f@"canonicalDomains" e = parseTextField f e
+parseHostField f@"canonicalizeFallbackLocal" e =
+  parseEnumField f ["no", "yes"] e
+parseHostField f@"canonicalizeHostname" e =
+  parseEnumField f ["always", "no", "yes"] e
+parseHostField f@"canonicalizeMaxDots" e = parseNaturalField f e
+parseHostField f@"canonicalizePermittedCNAMEs" e = parseTextField f e
+parseHostField f@"certificateFile" e = parseTextField f e
+parseHostField f@"challengeResponseAuthentication" e =
+  parseEnumField f ["no", "yes"] e
+parseHostField f@"checkHostIP" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"ciphers" e = parseTextField f e
+parseHostField f@"clearAllForwardings" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"compression" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"connectTimeout" e = parseNaturalField f e
+parseHostField f@"connectionAttempts" e = parseNaturalField f e
+parseHostField f@"controlMaster" e =
+  parseEnumField f ["auto", "autoask", "ask", "no", "yes"] e
+parseHostField f@"controlPath" e = parseTextField f e
+parseHostField f@"controlPersist" e = parseTextField f e
+parseHostField f@"dynamicForward" e = parseTextField f e
+parseHostField f@"enableSSHKeysign" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"escapeChar" e = parseTextField f e
+parseHostField f@"exitOnForwardFailure" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"fingerprintHash" e = parseEnumField f ["md5", "sha256"] e
+parseHostField f@"forwardAgent" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"forwardX11" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"forwardX11Timeout" e = parseTextField f e
+parseHostField f@"forwardX11Trusted" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"gSSAPIAuthentication" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"gSSAPIDelegateCredentials" e =
+  parseEnumField f ["no", "yes"] e
+parseHostField f@"gatewayPorts" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"globalKnownHostsFile" e = parseTextField f e
+parseHostField f@"hashKnownHosts" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"hostKeyAlgorithms" e = parseTextField f e
+parseHostField f@"hostKeyAlias" e = parseTextField f e
 parseHostField f@"hostName" e = parseTextField f e
+parseHostField f@"hostbasedAuthentication" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"hostbasedKeyTypes" e = parseTextField f e
+parseHostField f@"iPQoS" e = parseTextField f e
+parseHostField f@"identitiesOnly" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"identityAgent" e = parseTextField f e
 parseHostField f@"identityFile" e = parseTextField f e
+parseHostField f@"ignoreUnknown" e = parseTextField f e
+parseHostField f@"include" e = parseTextField f e
+parseHostField f@"kbdInteractiveAuthentication" e =
+  parseEnumField f ["no", "yes"] e
+parseHostField f@"kbdInteractiveDevices" e = parseTextField f e
+parseHostField f@"kexAlgorithms" e = parseTextField f e
+parseHostField f@"localCommand" e = parseTextField f e
+parseHostField f@"localForward" e = parseTextField f e
+parseHostField f@"logLevel" e =
+  parseEnumField
+    f
+    [ "DEBUG"
+    , "DEBUG1"
+    , "DEBUG2"
+    , "DEBUG3"
+    , "ERROR"
+    , "FATAL"
+    , "INFO"
+    , "QUIET"
+    , "VERBOSE"
+    ]
+    e
+parseHostField f@"mACs" e = parseTextField f e
+parseHostField f@"noHostAuthenticationForLocalhost" e =
+  parseEnumField f ["no", "yes"] e
+parseHostField f@"numberOfPasswordPrompts" e = parseNaturalField f e
+parseHostField f@"pKCS11Provider" e = parseTextField f e
+parseHostField f@"passwordAuthentication" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"permitLocalCommand" e = parseEnumField f ["no", "yes"] e
 parseHostField f@"port" e = parseNaturalField f e
+parseHostField f@"preferredAuthentications" e = parseTextField f e
+parseHostField f@"proxyCommand" e = parseTextField f e
+parseHostField f@"proxyJump" e = parseTextField f e
+parseHostField f@"proxyUseFdpass" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"pubkeyAcceptedKeyTypes" e = parseTextField f e
+parseHostField f@"pubkeyAuthentication" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"rekeyLimit" e = parseTextField f e
+parseHostField f@"remoteCommand" e = parseTextField f e
+parseHostField f@"remoteForward" e = parseTextField f e
+parseHostField f@"requestTTY" e =
+  parseEnumField f ["auto", "force", "no", "yes"] e
+parseHostField f@"revokedHostKeys" e = parseTextField f e
+parseHostField f@"sendEnv" e = parseTextField f e
+parseHostField f@"serverAliveCountMax" e = parseNaturalField f e
+parseHostField f@"serverAliveInterval" e = parseNaturalField f e
+parseHostField f@"setEnv" e = parseTextField f e
+parseHostField f@"streamLocalBindMask" e = parseTextField f e
+parseHostField f@"streamLocalBindUnlink" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"strictHostKeyChecking" e =
+  parseEnumField f ["accept-new", "ask", "no", "off", "yes"] e
+parseHostField f@"syslogFacility" e =
+  parseEnumField
+    f
+    [ "AUTH"
+    , "DAEMON"
+    , "LOCAL0"
+    , "LOCAL1"
+    , "LOCAL2"
+    , "LOCAL3"
+    , "LOCAL4"
+    , "LOCAL5"
+    , "LOCAL6"
+    , "LOCAL7"
+    , "USER"
+    ]
+    e
+parseHostField f@"tCPKeepAlive" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"tunnel" e =
+  parseEnumField f ["ethernet", "no", "point-to-point", "yes"] e
+parseHostField f@"tunnelDevice" e = parseTextField f e
+parseHostField f@"updateHostKeys" e = parseEnumField f ["ask", "no", "yes"] e
 parseHostField f@"useKeychain" e = parseEnumField f ["no", "yes"] e
 parseHostField f@"user" e = parseTextField f e
+parseHostField f@"userKnownHostsFile" e = parseTextField f e
+parseHostField f@"verifyHostKeyDNS" e = parseEnumField f ["ask", "no", "yes"] e
+parseHostField f@"visualHostKey" e = parseEnumField f ["no", "yes"] e
+parseHostField f@"xAuthLocation" e = parseTextField f e
 parseHostField f _ = Left (CompileError $ "Unrecognized field \"" <> f <> "\"")
 
 parseEnumField :: Text -> [Text] -> Expr s X -> Either CompileError Text

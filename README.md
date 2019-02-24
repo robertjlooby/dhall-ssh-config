@@ -20,9 +20,17 @@ The fields themselves are named the same as they are in the `ssh_config` man pag
 
 ### Running
 
-* `git clone git@github.com:robertjlooby/dhall-ssh-config.git`
-* `cd dhall-ssh-config`
-* `stack exec dhall-to-ssh-config -- < path/to/sshConfig.dhall > path/to/ssh/config`
+To clone, build, and run:
+
+    git clone git@github.com:robertjlooby/dhall-ssh-config.git
+    cd dhall-ssh-config
+    stack exec dhall-to-ssh-config -- < path/to/sshConfig.dhall > path/to/ssh/config
+
+To install using homebrew:
+
+    brew tap robertjlooby/homebrew
+    brew install dhall-to-ssh-config
+    dhall-to-ssh-config < path/to/sshConfig.dhall > path/to/ssh/config
 
 ### Tests
 

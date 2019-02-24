@@ -28,7 +28,6 @@ To clone, build, and run:
 
 To install using homebrew:
 
-    brew tap robertjlooby/homebrew
     brew install dhall-to-ssh-config
     dhall-to-ssh-config < path/to/sshConfig.dhall > path/to/ssh/config
 

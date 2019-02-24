@@ -70,15 +70,20 @@ spec = do
         "Host test\n     HostName 1.2.3.4\n"
     it "handles a full example config" $ do
       dhall <-
-        Data.Text.IO.readFile "./test/Dhall/fullExample.dhall" >>=
-        Dhall.inputExpr
-      sshConfig <- Data.Text.IO.readFile "./test/Dhall/fullExample"
+        Data.Text.IO.readFile "./examples/fullExample.dhall" >>= Dhall.inputExpr
+      sshConfig <- Data.Text.IO.readFile "./examples/fullExample"
       dhallToSSHConfig dhall `shouldBe` Right sshConfig
     it "handles a full example config with multiple hosts per config" $ do
       dhall <-
-        Data.Text.IO.readFile "./test/Dhall/fullExampleMultipleHosts.dhall" >>=
+        Data.Text.IO.readFile "./examples/fullExampleMultipleHosts.dhall" >>=
         Dhall.inputExpr
-      sshConfig <- Data.Text.IO.readFile "./test/Dhall/fullExampleMultipleHosts"
+      sshConfig <- Data.Text.IO.readFile "./examples/fullExampleMultipleHosts"
+      dhallToSSHConfig dhall `shouldBe` Right sshConfig
+    it "handles an example config with functions" $ do
+      dhall <-
+        Data.Text.IO.readFile "./examples/functionExample.dhall" >>=
+        Dhall.inputExpr
+      sshConfig <- Data.Text.IO.readFile "./examples/functionExample"
       dhallToSSHConfig dhall `shouldBe` Right sshConfig
   it "the empty config is valid Dhall and doesn't add any configuration" $
     "[./resources/EmptySSHConfig.dhall // {host = \"test\"}]" `shouldConvertTo`

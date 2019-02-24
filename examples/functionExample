@@ -1,0 +1,20 @@
+Host *
+     AddKeysToAgent yes
+     IdentityFile ~/.ssh/id_rsa
+     UseKeychain yes
+
+Host FirstServer
+     HostName first-server.test
+     User User1
+
+Host SecondServer
+     HostName second-server.example
+     User User1
+
+Host ThirdServer
+     HostName third-server.test
+     User User2
+
+Host FourthServer
+     HostName fourth-server.example
+     User User2

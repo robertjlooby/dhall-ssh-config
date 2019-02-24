@@ -1,4 +1,4 @@
-    let e = ./resources/EmptySSHConfig.dhall
+let e = ./resources/EmptySSHConfig.dhall
 
 in  [   e
       ⫽ { host =

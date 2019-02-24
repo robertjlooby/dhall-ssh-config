@@ -80,6 +80,12 @@ spec = do
         Dhall.inputExpr
       sshConfig <- Data.Text.IO.readFile "./test/Dhall/fullExampleMultipleHosts"
       dhallToSSHConfig dhall `shouldBe` Right sshConfig
+    it "handles an example config with functions" $ do
+      dhall <-
+        Data.Text.IO.readFile "./test/Dhall/functionExample.dhall" >>=
+        Dhall.inputExpr
+      sshConfig <- Data.Text.IO.readFile "./test/Dhall/functionExample"
+      dhallToSSHConfig dhall `shouldBe` Right sshConfig
   it "the empty config is valid Dhall and doesn't add any configuration" $
     "[./resources/EmptySSHConfig.dhall // {host = \"test\"}]" `shouldConvertTo`
     "Host test\n"

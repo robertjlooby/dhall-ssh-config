@@ -4,7 +4,7 @@ github:              "robertjlooby/dhall-ssh-config"
 license:             GPL-3.0-only
 author:              "Robert Looby"
 maintainer:          "robertjlooby@gmail.com"
-copyright:           "2018 Robert Looby"
+copyright:           "2019 Robert Looby"
 
 extra-source-files:
 - README.md

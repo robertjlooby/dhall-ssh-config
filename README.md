@@ -9,6 +9,7 @@ The Dhall site linked above explains some benefits of the language in general. T
 * Functions: This is the main one. Use functions to DRY up your config.
 * Type checking: Some limited type checking (though most fields are just `Text` values)
 * Enum checking: Fields accepting some enumerated set of values (ex. `yes`/`no`/`ask`) are checked when generating the config file. In the future more checks may be added (for example time formats).
+* Consistent formatting: Keep your Dhall config consistenly formatted with `dhall format`. The generated ssh config file will be in a consistent format.
 
 ### Notes on types
 

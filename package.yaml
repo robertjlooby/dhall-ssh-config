@@ -1,5 +1,5 @@
 name:                dhall-ssh-config
-version:             0.2.0.0
+version:             1.0.1.0
 github:              "robertjlooby/dhall-ssh-config"
 license:             GPL-3.0-only
 author:              "Robert Looby"

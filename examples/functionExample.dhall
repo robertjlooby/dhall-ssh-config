@@ -4,14 +4,10 @@ let e = ./resources/EmptySSHConfig.dhall
 
 let baseConfig =
         e
-      ⫽ { host =
-            "*"
-        , addKeysToAgent =
-            Some "yes"
-        , identityFile =
-            Some "~/.ssh/id_rsa"
-        , useKeychain =
-            Some "yes"
+      ⫽ { host = "*"
+        , addKeysToAgent = Some "yes"
+        , identityFile = Some "~/.ssh/id_rsa"
+        , useKeychain = Some "yes"
         }
 
 let user1Servers =
@@ -29,30 +25,27 @@ let buildConfig =
       → λ(config : { host : Text, hostName : Text })
       → λ(configs : List SSHConfig)
       →   [   e
-            ⫽ { host =
-                  config.host
-              , hostName =
-                  Some config.hostName
-              , user =
-                  Some user
+            ⫽ { host = config.host
+              , hostName = Some config.hostName
+              , user = Some user
               }
           ]
         # configs
 
 let user1Config =
       List/fold
-      { host : Text, hostName : Text }
-      user1Servers
-      (List SSHConfig)
-      (buildConfig "User1")
-      ([] : List SSHConfig)
+        { host : Text, hostName : Text }
+        user1Servers
+        (List SSHConfig)
+        (buildConfig "User1")
+        ([] : List SSHConfig)
 
 let user2Config =
       List/fold
-      { host : Text, hostName : Text }
-      user2Servers
-      (List SSHConfig)
-      (buildConfig "User2")
-      ([] : List SSHConfig)
+        { host : Text, hostName : Text }
+        user2Servers
+        (List SSHConfig)
+        (buildConfig "User2")
+        ([] : List SSHConfig)
 
 in  [ baseConfig ] # user1Config # user2Config

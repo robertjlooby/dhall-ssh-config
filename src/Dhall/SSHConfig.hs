@@ -52,9 +52,9 @@ parseHost e =
          "Each host configuration should be a Record. Instead got " <>
          Dhall.Core.pretty e)
 
-parseHostFields :: Map Text (Expr s X) -> Either CompileError Text
+parseHostFields :: Map Text (Dhall.Core.RecordField s X) -> Either CompileError Text
 parseHostFields fields =
-  case Map.lookup "host" fields of
+  case Dhall.Core.recordFieldValue <$> Map.lookup "host" fields of
     Nothing -> Left (CompileError "Every configuration needs a \"host\" field.")
     Just (Dhall.Core.TextLit (Dhall.Core.Chunks [] t)) ->
       (("Host " <> t <> "\n") <>) <$> body
@@ -77,8 +77,11 @@ parseHostFields fields =
          Dhall.Core.pretty e)
     body = do
       parsedFields <-
-        Map.traverseWithKey parseHostField (Map.delete "host" fields)
+        Map.traverseWithKey parseHostRecordField (Map.delete "host" fields)
       return $ Map.foldMapWithKey (flip const) parsedFields
+
+parseHostRecordField :: Text -> Dhall.Core.RecordField s X -> Either CompileError Text
+parseHostRecordField f e = parseHostField f (Dhall.Core.recordFieldValue e)
 
 parseHostField :: Text -> Expr s X -> Either CompileError Text
 parseHostField f@"addKeysToAgent" e =
